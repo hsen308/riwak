@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riwak Coffee Shop — Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── LIGHT THEME ── */
+    [data-theme="light"] {
+      --bg:        #FFF8F2;
+      --bg2:       #FFF1E5;
+      --bg3:       #FFE8D0;
+      --nav-bg:    rgba(255,248,242,0.96);
+      --loader-bg: #FFFFFF;
+      --orange:    #C84E08;
+      --orange2:   #E06018;
+      --orange3:   #F5904A;
+      --brown:     #241008;
+      --muted:     #926848;
+      --muted2:    #C4A080;
+      --divider:   #EDD8C4;
+      --divider2:  #F5E8DA;
+      --text:      #241008;
+      --card-bg:   #2A1208;
+      --card-text: #FFFFFF;
+      --hero-glow: rgba(224,96,24,0.18);
+      --price:     #C84E08;
+    }
+
+    /* ── DARK THEME ── */
+    [data-theme="dark"] {
+      --bg:        #070200;
+      --bg2:       #0F0400;
+      --bg3:       #160600;
+      --nav-bg:    rgba(7,2,0,0.95);
+      --loader-bg: #070200;
+      --orange:    #E05A10;
+      --orange2:   #FF6E20;
+      --orange3:   #FF9550;
+      --brown:     #070200;
+      --muted:     #7A5A48;
+      --muted2:    #5A3A28;
+      --divider:   #1E0A02;
+      --divider2:  #180800;
+      --text:      #FFF3EC;
+      --card-bg:   #1A0A03;
+      --card-text: #FFF3EC;
+      --hero-glow: rgba(224,90,16,0.25);
+      --price:     #FF7A30;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    /* ── LOADER ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--loader-bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #loader.out { opacity: 0; visibility: hidden; }
+
+    .loader-ring {
+      position: relative;
+      width: 108px;
+      height: 108px;
+    }
+    .loader-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px solid var(--divider);
+    }
+    .loader-ring::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid var(--orange3);
+      opacity: 0.4;
+      animation: ringPulse 2s ease-in-out infinite;
+    }
+    @keyframes ringPulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.05); opacity: 0.6; }
+    }
+    .loader-ring img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      position: relative;
+      z-index: 1;
+    }
+    .loader-text {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 7px;
+      color: var(--orange);
+      text-transform: uppercase;
+      transition: color 0.4s;
+    }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--divider);
+      background: var(--bg2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.4s, border-color 0.4s;
+      flex-shrink: 0;
+    }
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--orange2);
+      transition: fill 0.4s;
+    }
+    .icon-sun { display: none; }
+    .icon-moon { display: block; }
+    [data-theme="dark"] .icon-sun { display: block; }
+    [data-theme="dark"] .icon-moon { display: none; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 52px 24px 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.7s ease 0.15s;
+    }
+    .hero.in { opacity: 1; }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, var(--hero-glow) 0%, transparent 70%),
+        linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+      transition: background 0.4s;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero-logo-outer {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--orange2), var(--orange3));
+      box-shadow: 0 8px 32px rgba(200,78,8,0.22), 0 2px 8px rgba(200,78,8,0.12);
+      margin-bottom: 26px;
+      transition: box-shadow 0.4s;
+    }
+    [data-theme="dark"] .hero-logo-outer {
+      box-shadow: 0 8px 40px rgba(224,90,16,0.4), 0 2px 8px rgba(224,90,16,0.2);
+    }
+    .hero-logo-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--bg);
+      transition: border-color 0.4s;
+    }
+    .hero-logo-inner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .hero-eyebrow {
+      font-size: 9px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--orange2);
+      margin-bottom: 10px;
+      transition: color 0.4s;
+    }
+    .hero-name {
+      font-family: 'Cinzel', serif;
+      font-size: 42px;
+      font-weight: 500;
+      letter-spacing: 10px;
+      color: var(--text);
+      line-height: 1;
+      text-align: center;
+      transition: color 0.4s;
+    }
+    .hero-arabic {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--orange);
+      letter-spacing: 5px;
+      margin-top: 7px;
+      transition: color 0.4s;
+    }
+    .hero-divider {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 18px 0 14px;
+      width: 180px;
+    }
+    .hero-divider span { flex: 1; height: 1px; background: var(--divider); transition: background 0.4s; }
+    .hero-divider i { font-style: normal; font-size: 7px; color: var(--orange3); letter-spacing: 3px; }
+    .hero-tag {
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.4s;
+    }
+
+    /* ── TAB NAV ── */
+    .tab-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--divider);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .tab-nav-inner { display: inline-flex; min-width: max-content; padding: 0 16px; }
+    .tab-btn {
+      padding: 15px 18px;
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted2);
+      border: none;
+      background: none;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+      white-space: nowrap;
+      user-select: none;
+      font-family: 'Jost', sans-serif;
+    }
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--orange);
+      border-radius: 2px 2px 0 0;
+      transition: width 0.3s ease, background 0.4s;
+    }
+    .tab-btn.active { color: var(--text); }
+    .tab-btn.active::after { width: 65%; }
+
+    /* ── MENU BODY ── */
+    .menu-body { padding-bottom: 110px; }
+
+    /* ── SECTION ── */
+    .menu-section {
+      padding: 52px 24px 0;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .menu-section.in { opacity: 1; transform: none; }
+
+    .sec-head { margin-bottom: 32px; }
+    .sec-eyebrow {
+      font-size: 8.5px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--orange3);
+      margin-bottom: 7px;
+      transition: color 0.4s;
+    }
+    .sec-title {
+      font-family: 'Cinzel', serif;
+      font-size: 25px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 2px;
+      transition: color 0.4s;
+    }
+    .sec-rule {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sec-rule::before {
+      content: '';
+      width: 32px;
+      height: 1.5px;
+      background: var(--orange);
+      border-radius: 2px;
+      flex-shrink: 0;
+      transition: background 0.4s;
+    }
+    .sec-rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--divider);
+      transition: background 0.4s;
+    }
+
+    /* ── SUBSECTION ── */
+    .sub-label {
+      font-size: 8.5px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--orange2);
+      padding: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: color 0.4s;
+    }
+    .sub-label::after { content: ''; flex: 1; height: 1px; background: var(--divider2); transition: background 0.4s; }
+
+    /* ── ITEMS ── */
+    .item-list { list-style: none; }
+    .item-row {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--divider2);
+      gap: 10px;
+      transition: border-color 0.4s;
+    }
+    .item-row:last-child { border-bottom: none; }
+    .item-left { flex: 1; min-width: 0; }
+    .item-name {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.3px;
+      transition: color 0.4s;
+    }
+    .item-variant {
+      font-size: 10px;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+      transition: color 0.4s;
+    }
+    .item-price {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--price);
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+      transition: color 0.4s;
+    }
+
+    /* ── SECTION BREAK ── */
+    .sec-break { margin: 52px 24px 0; height: 1px; background: var(--divider); transition: background 0.4s; }
+
+    /* ── FIND US ── */
+    .find-us {
+      margin: 56px 20px 0;
+      background: var(--card-bg);
+      border-radius: 6px;
+      padding: 40px 24px;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+      transition: background 0.4s;
+    }
+    .find-us::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(224,96,24,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .find-us > * { position: relative; z-index: 1; }
+    .find-us-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 18px;
+      border: 2px solid rgba(255,255,255,0.12);
+    }
+    .find-us-title {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: #FFFFFF;
+      letter-spacing: 6px;
+      margin-bottom: 6px;
+    }
+    .find-us-sub {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 28px;
+    }
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      background: var(--orange2);
+      color: #FFFFFF;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(200,78,8,0.4);
+      transition: filter 0.2s, background 0.4s;
+    }
+    .map-btn:active { filter: brightness(0.9); }
+    .map-btn svg { width: 13px; height: 13px; fill: #FFFFFF; flex-shrink: 0; }
+    .ig-link {
+      display: block;
+      margin-top: 16px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      letter-spacing: 2px;
+      transition: color 0.2s;
+    }
+    .ig-link:hover { color: var(--orange3); }
+
+    /* ── FLOAT BAR ── */
+    .float-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 20px 28px;
+      background: linear-gradient(to top, var(--bg) 55%, transparent);
+      pointer-events: none;
+      transition: background 0.4s;
+    }
+    .float-bar a {
+      pointer-events: all;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px;
+      background: var(--orange);
+      color: #FFFFFF;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      box-shadow: 0 6px 28px rgba(200,78,8,0.35);
+      transition: background 0.4s, filter 0.2s;
+    }
+    .float-bar a:active { filter: brightness(0.9); }
+    .float-bar a svg { width: 13px; height: 13px; fill: rgba(255,255,255,0.85); }
+  </style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-ring">
+    <img src="./riwak logo.jpg" alt="Riwak">
+  </div>
+  <p class="loader-text">Riwak</p>
+</div>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <!-- moon = switch to dark -->
+    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <!-- sun = switch to light -->
+    <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm8-8a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2h1zM5 12a1 1 0 0 1-1 1H3a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm11.95-6.36a1 1 0 0 1 0 1.41l-.7.7a1 1 0 1 1-1.42-1.41l.71-.7a1 1 0 0 1 1.41 0zM8.17 15.54a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.42l.71-.7a1 1 0 0 1 1.41 0zm9.19 2.12a1 1 0 0 1-1.41 0l-.7-.71a1 1 0 1 1 1.41-1.41l.7.7a1 1 0 0 1 0 1.42zM8.17 8.46a1 1 0 0 1-1.41 0l-.71-.7a1 1 0 1 1 1.42-1.42l.7.71a1 1 0 0 1 0 1.41zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg>
+  </button>
+  <div class="hero-logo-outer">
+    <div class="hero-logo-inner">
+      <img src="./riwak logo.jpg" alt="Riwak">
+    </div>
+  </div>
+  <p class="hero-eyebrow">Tripoli · Abu Samra</p>
+  <h1 class="hero-name">RIWAK</h1>
+  <p class="hero-arabic">رِواق</p>
+  <div class="hero-divider"><span></span><i>◆</i><span></span></div>
+  <p class="hero-tag">Classic Coffee Shop</p>
+</div>
+
+<!-- TAB NAV -->
+<nav class="tab-nav" id="tabNav">
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" data-target="hot-coffee">Hot Coffee</button>
+    <button class="tab-btn" data-target="iced-coffee">Iced Coffee</button>
+    <button class="tab-btn" data-target="matcha">Matcha</button>
+    <button class="tab-btn" data-target="non-coffee">Non Coffee</button>
+    <button class="tab-btn" data-target="sweets">Sweets</button>
+  </div>
+</nav>
+
+<!-- MENU -->
+<div class="menu-body">
+
+  <!-- HOT COFFEE -->
+  <section class="menu-section" id="hot-coffee">
+    <div class="sec-head">
+      <p class="sec-eyebrow">Crafted to order</p>
+      <h2 class="sec-title">Hot Coffee</h2>
+      <div class="sec-rule"></div>
+    </div>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Espresso</p></div><span class="item-price">$2.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Espresso Doppio</p></div><span class="item-price">$3.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Cappuccino</p></div><span class="item-price">$3.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Mocaccino</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Nescafe</p></div><span class="item-price">$2.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Latte</p></div><span class="item-price">$3.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Latte Macchiato</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Latte Vanilla</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Hot Chocolate</p></div><span class="item-price">$3.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Americano</p></div><span class="item-price">$3.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Cortado</p></div><span class="item-price">$3.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Spanish Latte</p></div><span class="item-price">$4.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Flat White</p></div><span class="item-price">$4.00</span></li>
+    </ul>
+  </section>
+
+  <div class="sec-break"></div>
+
+  <!-- ICED COFFEE -->
+  <section class="menu-section" id="iced-coffee">
+    <div class="sec-head">
+      <p class="sec-eyebrow">Cold & bold</p>
+      <h2 class="sec-title">Iced Coffee</h2>
+      <div class="sec-rule"></div>
+    </div>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Iced Latte</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Flavoured Latte</p><p class="item-variant">Caramel · Vanilla · Hazelnut</p></div><span class="item-price">$4.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Iced Americano</p></div><span class="item-price">$3.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Iced Mocha</p></div><span class="item-price">$4.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Iced Spanish Latte</p></div><span class="item-price">$5.00</span></li>
+    </ul>
+  </section>
+
+  <div class="sec-break"></div>
+
+  <!-- MATCHA -->
+  <section class="menu-section" id="matcha">
+    <div class="sec-head">
+      <p class="sec-eyebrow">Ceremonial grade</p>
+      <h2 class="sec-title">Matcha</h2>
+      <div class="sec-rule"></div>
+    </div>
+    <p class="sub-label">Hot</p>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Hot Matcha Vanilla</p></div><span class="item-price">$4.50</span></li>
+    </ul>
+    <p class="sub-label">Cold</p>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Vanilla Iced Matcha</p></div><span class="item-price">$5.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Mango Iced Matcha</p></div><span class="item-price">$5.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Strawberry Iced Matcha</p></div><span class="item-price">$5.50</span></li>
+    </ul>
+  </section>
+
+  <div class="sec-break"></div>
+
+  <!-- NON COFFEE -->
+  <section class="menu-section" id="non-coffee">
+    <div class="sec-head">
+      <p class="sec-eyebrow">Something different</p>
+      <h2 class="sec-title">Non Coffee</h2>
+      <div class="sec-rule"></div>
+    </div>
+    <p class="sub-label">Milkshakes</p>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Chocolate</p></div><span class="item-price">$4.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Strawberry</p></div><span class="item-price">$4.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Vanilla</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Lotus</p></div><span class="item-price">$5.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Toffee</p></div><span class="item-price">$5.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Cookies</p></div><span class="item-price">$5.00</span></li>
+    </ul>
+    <p class="sub-label">Smoothies</p>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Mango</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Strawberry</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Peach</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Passion Fruit</p></div><span class="item-price">$4.50</span></li>
+    </ul>
+    <p class="sub-label">Frappé</p>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Caramel</p></div><span class="item-price">$5.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Dark Mocha</p></div><span class="item-price">$5.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Vanilla</p></div><span class="item-price">$4.50</span></li>
+    </ul>
+  </section>
+
+  <div class="sec-break"></div>
+
+  <!-- SWEETS -->
+  <section class="menu-section" id="sweets">
+    <div class="sec-head">
+      <p class="sec-eyebrow">A little indulgence</p>
+      <h2 class="sec-title">Sweets</h2>
+      <div class="sec-rule"></div>
+    </div>
+    <ul class="item-list">
+      <li class="item-row"><div class="item-left"><p class="item-name">Chocolate Date</p></div><span class="item-price">$3.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Brownie</p></div><span class="item-price">$3.50</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Riwak Specialty</p></div><span class="item-price">$4.00</span></li>
+      <li class="item-row"><div class="item-left"><p class="item-name">Cookies</p></div><span class="item-price">$2.50</span></li>
+    </ul>
+  </section>
+
+  <!-- FIND US -->
+  <div class="find-us">
+    <img class="find-us-logo" src="./riwak logo.jpg" alt="Riwak">
+    <p class="find-us-title">Find Us</p>
+    <p class="find-us-sub">Tripoli · Abu Samra · Lebanon</p>
+    <a href="https://maps.app.goo.gl/CcrWSoUmYXLZmpQK7" target="_blank" class="map-btn">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      Open in Maps
+    </a>
+    <a href="https://instagram.com/riwak.coffeeshop" target="_blank" class="ig-link">@riwak.coffeeshop</a>
+  </div>
+
+</div>
+
+<!-- FLOAT BAR -->
+<div class="float-bar">
+  <a href="https://maps.app.goo.gl/CcrWSoUmYXLZmpQK7" target="_blank">
+    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    Get Directions
+  </a>
+</div>
+
+<script>
+  // Loader
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('out');
+      document.getElementById('hero').classList.add('in');
+      document.querySelectorAll('.menu-section').forEach((s, i) => {
+        setTimeout(() => s.classList.add('in'), 150 + i * 60);
+      });
+    }, 1000);
+  });
+
+  // Theme toggle
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('riwak-theme') || 'light';
+  html.setAttribute('data-theme', saved);
+
+  toggle.addEventListener('click', () => {
+    const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('riwak-theme', next);
+  });
+
+  // Tab nav
+  const tabs = document.querySelectorAll('.tab-btn');
+  const sections = document.querySelectorAll('.menu-section');
+  const tabNav = document.getElementById('tabNav');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const t = document.getElementById(tab.dataset.target);
+      if (!t) return;
+      window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - tabNav.offsetHeight - 1, behavior: 'smooth' });
+    });
+  });
+
+  sections.forEach(s => new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.target === e.target.id));
+      const a = document.querySelector(`.tab-btn[data-target="${e.target.id}"]`);
+      if (a) a.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' }).observe(s));
+</script>
+</body>
+</html>
