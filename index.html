@@ -12,46 +12,46 @@
 
     /* ── LIGHT THEME ── */
     [data-theme="light"] {
-      --bg:        #FFF8F2;
-      --bg2:       #FFF1E5;
-      --bg3:       #FFE8D0;
-      --nav-bg:    rgba(255,248,242,0.96);
-      --loader-bg: #FFFFFF;
-      --orange:    #C84E08;
-      --orange2:   #E06018;
-      --orange3:   #F5904A;
-      --brown:     #241008;
-      --muted:     #926848;
-      --muted2:    #C4A080;
-      --divider:   #EDD8C4;
-      --divider2:  #F5E8DA;
-      --text:      #241008;
-      --card-bg:   #2A1208;
+      --bg:        #FFECD6;
+      --bg2:       #FFD9B0;
+      --bg3:       #FFC888;
+      --nav-bg:    rgba(255,236,214,0.97);
+      --loader-bg: #FFECD6;
+      --orange:    #B03A00;
+      --orange2:   #CC4E0A;
+      --orange3:   #E87030;
+      --brown:     #1A0A02;
+      --muted:     #7A4E28;
+      --muted2:    #B07848;
+      --divider:   #EAAA70;
+      --divider2:  #F5C898;
+      --text:      #1A0A02;
+      --card-bg:   #5C2810;
       --card-text: #FFFFFF;
-      --hero-glow: rgba(224,96,24,0.18);
-      --price:     #C84E08;
+      --hero-glow: rgba(204,78,10,0.42);
+      --price:     #B03A00;
     }
 
     /* ── DARK THEME ── */
     [data-theme="dark"] {
-      --bg:        #070200;
-      --bg2:       #0F0400;
-      --bg3:       #160600;
-      --nav-bg:    rgba(7,2,0,0.95);
-      --loader-bg: #070200;
-      --orange:    #E05A10;
-      --orange2:   #FF6E20;
-      --orange3:   #FF9550;
-      --brown:     #070200;
-      --muted:     #7A5A48;
-      --muted2:    #5A3A28;
-      --divider:   #1E0A02;
-      --divider2:  #180800;
-      --text:      #FFF3EC;
-      --card-bg:   #1A0A03;
-      --card-text: #FFF3EC;
-      --hero-glow: rgba(224,90,16,0.25);
-      --price:     #FF7A30;
+      --bg:        #2E1A0C;
+      --bg2:       #3A2212;
+      --bg3:       #462A18;
+      --nav-bg:    rgba(46,26,12,0.97);
+      --loader-bg: #2E1A0C;
+      --orange:    #F07830;
+      --orange2:   #FF8C44;
+      --orange3:   #FFB070;
+      --brown:     #2E1A0C;
+      --muted:     #C09070;
+      --muted2:    #8A6040;
+      --divider:   #5A3420;
+      --divider2:  #4A2A18;
+      --text:      #FFF2E8;
+      --card-bg:   #3A1E0C;
+      --card-text: #FFF2E8;
+      --hero-glow: rgba(240,120,48,0.50);
+      --price:     #FFA050;
     }
 
     html { scroll-behavior: smooth; }
@@ -128,27 +128,50 @@
 
     /* ── THEME TOGGLE ── */
     .theme-toggle {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
-      width: 40px;
-      height: 40px;
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 1000;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      border: 1px solid var(--divider);
-      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,248,242,0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.4s, border-color 0.4s;
+      transition: background 0.4s, border-color 0.35s, box-shadow 0.35s, transform 0.2s;
       flex-shrink: 0;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
     }
+    [data-theme="dark"] .theme-toggle {
+      background: rgba(15,4,0,0.55);
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .theme-toggle:hover {
+      box-shadow: 0 4px 24px rgba(200,78,8,0.3), inset 0 1px 0 rgba(255,255,255,0.5);
+      border-color: var(--orange3);
+      transform: scale(1.08);
+    }
+    .theme-toggle:active { transform: scale(0.95); }
     .theme-toggle svg {
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
       fill: var(--orange2);
       transition: fill 0.4s;
+    }
+    .theme-toggle.spin svg {
+      animation: iconSpin 0.45s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    @keyframes iconSpin {
+      0%   { transform: rotate(0deg)   scale(1); opacity: 1; }
+      40%  { transform: rotate(180deg) scale(0.6); opacity: 0; }
+      41%  { transform: rotate(-180deg) scale(0.6); opacity: 0; }
+      100% { transform: rotate(0deg)   scale(1); opacity: 1; }
     }
     .icon-sun { display: none; }
     .icon-moon { display: block; }
@@ -526,14 +549,16 @@
   <p class="loader-text">Riwak</p>
 </div>
 
+<!-- THEME TOGGLE (fixed top-right) -->
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+  <!-- moon = switch to dark -->
+  <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  <!-- sun = switch to light -->
+  <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm8-8a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2h1zM5 12a1 1 0 0 1-1 1H3a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm11.95-6.36a1 1 0 0 1 0 1.41l-.7.7a1 1 0 1 1-1.42-1.41l.71-.7a1 1 0 0 1 1.41 0zM8.17 15.54a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.42l.71-.7a1 1 0 0 1 1.41 0zm9.19 2.12a1 1 0 0 1-1.41 0l-.7-.71a1 1 0 1 1 1.41-1.41l.7.7a1 1 0 0 1 0 1.42zM8.17 8.46a1 1 0 0 1-1.41 0l-.71-.7a1 1 0 1 1 1.42-1.42l.7.71a1 1 0 0 1 0 1.41zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg>
+</button>
+
 <!-- HERO -->
 <div class="hero" id="hero">
-  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-    <!-- moon = switch to dark -->
-    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    <!-- sun = switch to light -->
-    <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm8-8a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2h1zM5 12a1 1 0 0 1-1 1H3a1 1 0 0 1 0-2h1a1 1 0 0 1 1 1zm11.95-6.36a1 1 0 0 1 0 1.41l-.7.7a1 1 0 1 1-1.42-1.41l.71-.7a1 1 0 0 1 1.41 0zM8.17 15.54a1 1 0 0 1 0 1.41l-.7.71a1 1 0 1 1-1.42-1.42l.71-.7a1 1 0 0 1 1.41 0zm9.19 2.12a1 1 0 0 1-1.41 0l-.7-.71a1 1 0 1 1 1.41-1.41l.7.7a1 1 0 0 1 0 1.42zM8.17 8.46a1 1 0 0 1-1.41 0l-.71-.7a1 1 0 1 1 1.42-1.42l.7.71a1 1 0 0 1 0 1.41zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z"/></svg>
-  </button>
   <div class="hero-logo-outer">
     <div class="hero-logo-inner">
       <img src="./riwak logo.jpg" alt="Riwak">
@@ -715,6 +740,11 @@
 
   toggle.addEventListener('click', () => {
     const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    // spin animation
+    toggle.classList.remove('spin');
+    void toggle.offsetWidth; // reflow to restart animation
+    toggle.classList.add('spin');
+    toggle.addEventListener('animationend', () => toggle.classList.remove('spin'), { once: true });
     html.setAttribute('data-theme', next);
     localStorage.setItem('riwak-theme', next);
   });
